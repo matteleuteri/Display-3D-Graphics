@@ -46,7 +46,6 @@ public class DisplayGraphics extends Canvas{
     public static void main(String[] args) {  
         String fname = args[0];
         ArrayList<double[]> data = loadData(fname);
-
         // DisplayGraphics m = new DisplayGraphics();  
         // JFrame f = new JFrame();  
         // f.add(m);  
