@@ -11,17 +11,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 
-public class DisplayGraphics extends Canvas {  
-    @Override
-    public void paint(Graphics g) {    
-        setBackground(Color.GRAY);   
-        setForeground(Color.RED);  
-        
-        //g.fillOval(130,130,50, 60);  
-        //g.drawArc(30, 200, 40,50,90,60);  
-        //g.fillArc(30, 130, 40,50,180,40);       
-    }  
-
+public class DisplayGraphics { 
+    // get points and normals from a .pts file gprovided as cmd line agument
     public static double[][] loadData(String filename) {
         int lines = 0;
         try {
@@ -52,12 +43,7 @@ public class DisplayGraphics extends Canvas {
         }
         return dataPoints;
     }
-
-    /* 
-    *  This method scales the points so they fit inside a window, 
-    *  and are resized when the widow size changes
-    *
-    */
+    // return the largets and smallest value of each coordinate to determine how to scale the data
     public static double[] getBounds(double[][] unscaledData) {
         double xMin = 0;
         double xMax = 0;
@@ -68,28 +54,24 @@ public class DisplayGraphics extends Canvas {
         for(int i = 0; i < unscaledData.length; i++) {
             if(unscaledData[i][0] < xMin)
                 xMin = unscaledData[i][0];
-            if(unscaledData[i][1] > xMax)
-                xMax = unscaledData[i][1];
-            if(unscaledData[i][2] < yMin)
-                yMin = unscaledData[i][2];
-            if(unscaledData[i][3] > yMax)
-                yMax = unscaledData[i][3];
-            if(unscaledData[i][4] < zMin)
-                zMin = unscaledData[i][4];
-            if(unscaledData[i][5] > zMax)
-                zMax = unscaledData[i][5];
+            if(unscaledData[i][0] > xMax)
+                xMax = unscaledData[i][0];
+            if(unscaledData[i][1] < yMin)
+                yMin = unscaledData[i][1];
+            if(unscaledData[i][1] > yMax)
+                yMax = unscaledData[i][1];
+            if(unscaledData[i][2] < zMin)
+                zMin = unscaledData[i][2];
+            if(unscaledData[i][2] > zMax)
+                zMax = unscaledData[i][2];
         }
         double[] bounds = { xMin, xMax, yMin, yMax, zMin, zMax };
         return bounds;
     }
-
-    /*
-    *  TODO: determine bounds by difference betwen min and max value, instead
-    *  of by relative to window size argument. 
-    */
+    // Scale the points so they fit inside a given window size
     public static int determineScale(double[] bounds, int wSize) {
         int scale = 1;
-        while(Math.abs(bounds[0]) < wSize && bounds[1] < wSize && Math.abs(bounds[2]) < wSize && bounds[3] < wSize && Math.abs(bounds[4]) < wSize && bounds[5] < wSize) {
+        while(bounds[1] - bounds[0] < wSize && bounds[3] - bounds[2] < wSize && bounds[5] - bounds[4] < wSize) {
             for(int i = 0; i < bounds.length; i++) {
                 bounds[i] /= scale;
                 bounds[i] *= (scale + 1);
@@ -103,30 +85,14 @@ public class DisplayGraphics extends Canvas {
         final String fname = args[0];
         double[][] data = loadData(fname);
         double[] bounds = getBounds(data);
-        for(double i: bounds)
-            System.out.println(i);
 
-        int s = determineScale(bounds, 100);
-        System.out.println(s);
-        // now scale data by s
+        int s = determineScale(bounds, 200);
+        System.out.println("scale: " + s);
   
+        double[][] toProject = new double[data.length][3];
         for(int i = 0; i < data.length; i++) 
             for(int j = 0; j < 3; j++)
-                data[i][j] *= s;
+                toProject[i][j] = data[i][j] * s;
 
-        // for(int i = 0; i < data.length; i++) 
-        //     for(int j = 0; j < 2; j++)
-        //         System.out.println(data[i][j]);
-
-        // double[] bounds2 = getBounds(data);
-        // for(int i = 0; i < bounds2.length; i++) 
-        //     System.out.println(bounds2[i]);
-
-        // DisplayGraphics m = new DisplayGraphics();  
-        // JFrame f = new JFrame();  
-        // f.add(m);  
-        // f.setSize(400,400);  
-        // f.setVisible(true);  
     }  
-  
 }  
