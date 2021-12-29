@@ -1,5 +1,3 @@
-import java.awt.*;  
-import javax.swing.JFrame;  
 import java.util.Scanner;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -9,7 +7,6 @@ import java.nio.file.Files;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
 
 public class DisplayGraphics { 
     // get points and normals from a .pts file gprovided as cmd line agument
@@ -43,29 +40,24 @@ public class DisplayGraphics {
         }
         return dataPoints;
     }
-    // return the largets and smallest value of each coordinate to determine how to scale the data
+    // return the smallest and largest value of each coordinate to determine how to scale the data
     public static double[] getBounds(double[][] unscaledData) {
-        double xMin = 0;
-        double xMax = 0;
-        double yMin = 0;
-        double yMax = 0;
-        double zMin = 0;
-        double zMax = 0;
+        // order of bounds is xMin, xMax, yMin, yMax, zMin, zMax
+        double[] bounds = { 0, 0, 0, 0, 0, 0 };
         for(int i = 0; i < unscaledData.length; i++) {
-            if(unscaledData[i][0] < xMin)
-                xMin = unscaledData[i][0];
-            if(unscaledData[i][0] > xMax)
-                xMax = unscaledData[i][0];
-            if(unscaledData[i][1] < yMin)
-                yMin = unscaledData[i][1];
-            if(unscaledData[i][1] > yMax)
-                yMax = unscaledData[i][1];
-            if(unscaledData[i][2] < zMin)
-                zMin = unscaledData[i][2];
-            if(unscaledData[i][2] > zMax)
-                zMax = unscaledData[i][2];
+            if(unscaledData[i][0] < bounds[0])
+                bounds[0] = unscaledData[i][0];
+            else if(unscaledData[i][0] > bounds[1])
+                bounds[1] = unscaledData[i][0];
+            if(unscaledData[i][1] < bounds[2])
+                bounds[2] = unscaledData[i][1];
+            else if(unscaledData[i][1] > bounds[3])
+                bounds[3] = unscaledData[i][1];
+            if(unscaledData[i][2] < bounds[4])
+                bounds[4] = unscaledData[i][2];
+            else if(unscaledData[i][2] > bounds[5])
+                bounds[5] = unscaledData[i][2];
         }
-        double[] bounds = { xMin, xMax, yMin, yMax, zMin, zMax };
         return bounds;
     }
     // Scale the points so they fit inside a given window size
