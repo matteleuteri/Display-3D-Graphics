@@ -13,13 +13,27 @@ public class DataLoader {
     // construct a dataloader and set coordinates to scaled point values from specified file
     public DataLoader(String fname) {  
         double[][] data = loadData(fname);
-        double[] bounds = getBounds(data);
+        double[] bounds = getBounds(data);      
+        shiftOffset(data, bounds);
         int s = determineScale(bounds, 200);  
         coordinates = new double[data.length][3];
         for(int i = 0; i < data.length; i++) 
             for(int j = 0; j < 3; j++)
                 coordinates[i][j] = data[i][j] * s;
     } 
+    // shift all points to be centered around 0,0,0
+    public static void shiftOffset(double[][] data, double[] bounds) {
+        double[] shifts = new double[3];
+        for(int i = 0; i < bounds.length; i += 2) {
+            double toSubtract = (bounds[i + 1] + bounds[i]) / 2;
+            shifts[(i + 1) / 2] = toSubtract;
+        }
+        for(int j = 0; j < data.length; j++) {
+            for(int k = 0; k < shifts.length; k++) {
+                data[j][k] -= shifts[k];
+            }
+        }
+    }
     // get points and normals from a .pts file gprovided as cmd line agument
     public static double[][] loadData(String filename) {
         int lines = 0;
@@ -54,7 +68,7 @@ public class DataLoader {
     // return the smallest and largest value of each coordinate to determine how to scale the data
     public static double[] getBounds(double[][] unscaledData) {
         // order of bounds is xMin, xMax, yMin, yMax, zMin, zMax
-        double[] bounds = { 0, 0, 0, 0, 0, 0 };
+        double[] bounds = { Double.MAX_VALUE,-Double.MAX_VALUE,Double.MAX_VALUE,-Double.MAX_VALUE,Double.MAX_VALUE,-Double.MAX_VALUE };
         for(int i = 0; i < unscaledData.length; i++) {
             if(unscaledData[i][0] < bounds[0])
                 bounds[0] = unscaledData[i][0];
