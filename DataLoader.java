@@ -12,17 +12,17 @@ public class DataLoader {
     private double[][] coordinates;
     // construct a dataloader and set coordinates to scaled point values from specified file
     public DataLoader(String fname) {  
-        double[][] data = loadData(fname);
-        double[] bounds = getBounds(data);      
-        shiftOffset(data, bounds);
-        int s = determineScale(bounds, 200);  
+        double[][] data = DataLoader.loadData(fname);
+        double[] bounds = DataLoader.getBounds(data);      
+        DataLoader.shiftOffset(data, bounds);
+        int s = DataLoader.determineScale(bounds, 200);  
         coordinates = new double[data.length][3];
         for(int i = 0; i < data.length; i++) 
             for(int j = 0; j < 3; j++)
                 coordinates[i][j] = data[i][j] * s;
     } 
     // shift all points to be centered around 0,0,0
-    public static void shiftOffset(double[][] data, double[] bounds) {
+    private static void shiftOffset(double[][] data, double[] bounds) {
         double[] shifts = new double[3];
         for(int i = 0; i < bounds.length; i += 2) {
             double toSubtract = (bounds[i + 1] + bounds[i]) / 2;
@@ -35,7 +35,7 @@ public class DataLoader {
         }
     }
     // get points and normals from a .pts file gprovided as cmd line agument
-    public static double[][] loadData(String filename) {
+    private static double[][] loadData(String filename) {
         int lines = 0;
         try {
             lines = (int)Files.lines(Paths.get(filename)).count();
@@ -66,7 +66,7 @@ public class DataLoader {
         return dataPoints;
     }
     // return the smallest and largest value of each coordinate to determine how to scale the data
-    public static double[] getBounds(double[][] unscaledData) {
+    private static double[] getBounds(double[][] unscaledData) {
         // order of bounds is xMin, xMax, yMin, yMax, zMin, zMax
         double[] bounds = { Double.MAX_VALUE,-Double.MAX_VALUE,Double.MAX_VALUE,-Double.MAX_VALUE,Double.MAX_VALUE,-Double.MAX_VALUE };
         for(int i = 0; i < unscaledData.length; i++) {
@@ -86,7 +86,7 @@ public class DataLoader {
         return bounds;
     }
     // Scale the points so they fit inside a given window size
-    public static int determineScale(double[] bounds, int wSize) {
+    private static int determineScale(double[] bounds, int wSize) {
         int scale = 1;
         while(bounds[1] - bounds[0] < wSize && bounds[3] - bounds[2] < wSize && bounds[5] - bounds[4] < wSize) {
             for(int i = 0; i < bounds.length; i++) {
